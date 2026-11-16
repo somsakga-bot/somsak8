@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ศูนย์เตรียมสอบ นสต.</title>
+<title>ศูนย์เตรียมสอบ นสต.ป่าสัก</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--g1:#0a3b2b;--g2:#14664a;--g3:#e6f2ec;--gold:#d4af37;--bg:#f2f6f3;--tx:#17231d}
@@ -24,11 +24,11 @@ table{width:100%;border-collapse:collapse;font-size:.92rem}td,th{border:1px soli
 .scroll{overflow-x:auto}
 @media print{.np,header{display:none!important}body{background:#fff}.card{box-shadow:none;border:0}@page{size:A4 landscape;margin:10mm}}
 </style></head><body>
-<header><div class="brand"><img id="logo" src="logo.png" alt="" onerror="this.style.display='none'"><div><b>ศูนย์เตรียมสอบ นสต.ป่าสัก</b><small id="inst">ระบบเรียนออนไลน์ · แนวทางสู่ความสำเร็จ ของผู้มีฝันอยากเป็น นสต.</small></div></div><button id="bk" class="alt np" onclick="back()">← ย้อนกลับ</button></header>
+<header><div class="brand"><img id="logo" src="logo.png" alt="" onerror="this.style.display='none'"><div><b>ศูนย์เตรียมสอบ นสต.ป่าสัก</b><small id="inst">ระบบเรียนออนไลน์ · (ชื่อสถาบัน)</small></div></div><button id="bk" class="alt np" onclick="back()">← ย้อนกลับ</button></header>
 <main id="app"></main>
 <script>
 /* ===== ตั้งค่า ===== */
-const API='https://script.google.com/macros/s/AKfycbzUvpzURaskQq-W5GlhADrcdK1vBYhaC2dPAfjoAOtoGU6qHMsdsIyXJdzLJ3ciOVRLcA/exec';      // URL เว็บแอปจาก Apps Script
+const API='วาง_WEB_APP_URL_ที่นี่';      // URL เว็บแอปจาก Apps Script
 const MIN_PCT=80;
 /* ================== */
 const $=s=>document.querySelector(s), app=$('#app');
@@ -47,6 +47,10 @@ function embed(u){u=String(u);let m;
 function dl(u){u=String(u);let m;
  if(m=u.match(/docs\.google\.com\/(document|presentation|spreadsheets)\/d\/([\w-]+)/))return`https://docs.google.com/${m[1]}/d/${m[2]}/export?format=`+(m[1]=='presentation'?'pptx':m[1]=='document'?'pdf':'xlsx');
  if(m=u.match(/(?:\/d\/|[?&]id=)([\w-]{20,})/))return`https://drive.google.com/uc?export=download&id=${m[1]}`;return u}
+function player(u){u=String(u).trim();
+ if(/\.(mp3|m4a|wav|oga|ogg)(\?|$)/i.test(u))return`<audio controls src="${esc(u)}"></audio>`;
+ if(/\.(mp4|webm|mov|m4v)(\?|$)/i.test(u))return`<video controls playsinline style="width:100%;border-radius:10px;background:#000" src="${esc(u)}"></video>`;
+ return`<iframe src="${esc(embed(u))}" allowfullscreen></iframe>`}
 const pct=n=>(D.progress.find(p=>p.lesson==n)||{percent:0}).percent;
 const allDone=()=>D.lessons.every(l=>pct(l.no)>=MIN_PCT);
 const name=()=>U.firstName+' '+U.lastName;
@@ -56,7 +60,7 @@ async function refresh(){const r=await api('login',{code:U.code});if(r.ok){D=r;O
 function home(){draw(`<div class="card" style="text-align:center"><h2>ยินดีต้อนรับสู่ ศูนย์เตรียมสอบ นสต.ป่าสัก</h2><p>ระบบเรียนออนไลน์ 10 บทเรียน พร้อมแบบทดสอบและใบประกาศ</p><button onclick="show(reg)">📝 สมัครเข้าเรียน</button></div>
 <div class="card"><h2>เข้าสู่ห้องเรียน</h2>กรอกรหัสที่ได้รับ<input id="code" inputmode="numeric" placeholder="รหัสเข้าเรียน" onkeydown="if(event.key=='Enter')login()"><button onclick="login()">เข้าสู่ห้องเรียน</button></div>
 <div style="text-align:right"><button class="alt" onclick="show(admin)">🔐 แอดมิน</button></div>`)}
-function reg(){draw(`<div class="card"><h2>สมัครเข้าเรียน</h2><div class="grid"><div>ชื่อ *<input id="f1"></div><div>นามสกุล *<input id="f2"></div><div>เบอร์โทร *<input id="f3"></div><div>อีเมล (ถ้ามี จะส่งรหัสให้ทางอีเมล)<input id="f4"></div></div>ที่อยู่<input id="f5"><button onclick="doReg()">ส่งใบสมัคร</button><div id="msg"></div></div>`)}
+function reg(){draw(`<div class="card"><h2>สมัครเข้าเรียน</h2><div class="grid"><div>ชื่อ *<input id="f1"></div><div>นามสกุล *<input id="f2"></div><div>เบอร์โทร *<input id="f3"></div><div>อีเมล (ถ้ามี จะส่งรหัสให้ทางอีเมล)<input id="f4"></div></div>หน่วย/สังกัด<input id="f5"><button onclick="doReg()">ส่งใบสมัคร</button><div id="msg"></div></div>`)}
 async function doReg(){const r=await api('register',{firstName:f1.value.trim(),lastName:f2.value.trim(),phone:f3.value.trim(),email:f4.value.trim(),unit:f5.value.trim()});
  $('#msg').innerHTML=r.ok?'<p class="tag">✅ ส่งใบสมัครแล้ว รอการอนุมัติ เมื่ออนุมัติจะมีรหัสส่งให้ท่าน</p>':'<p class="tag bad">'+esc(r.msg)+'</p>'}
 async function login(){const code=$('#code').value.trim();if(!code)return;const r=await api('login',{code});
@@ -83,7 +87,7 @@ function result(type,r){const pre=D.scores.filter(s=>s.type=='pre').pop();
  ${type=='post'?`<div class="scroll"><table><tr>${r.per.map((_,i)=>`<th>บท ${i+1}</th>`).join('')}</tr><tr>${r.per.map(v=>`<td>${v}/5</td>`).join('')}</tr></table></div>`:''}${msg}<button class="alt" onclick="H=[];show(dash)">กลับหน้าบทเรียน</button></div>`)}
 
 /* ---------- วิดีโอต้อนรับ + วัตถุประสงค์ ---------- */
-function intro(){const s=D.settings;draw(`<div class="card"><h2>วิดีโอต้อนรับ</h2>${s.welcomeVideo?`<iframe src="${esc(embed(s.welcomeVideo))}" allowfullscreen></iframe>`:'<p>(ยังไม่ได้ใส่วิดีโอต้อนรับ)</p>'}<h2>วัตถุประสงค์ของหลักสูตร</h2><p style="white-space:pre-line">${esc(s.objectives)}</p><button onclick="H=[[dash,[]]];show(lesson,1)">เริ่มเรียนบทที่ 1 ▶</button></div>`)}
+function intro(){const s=D.settings;draw(`<div class="card"><h2>วิดีโอต้อนรับ</h2>${s.welcomeVideo?player(s.welcomeVideo):'<p>(ยังไม่ได้ใส่วิดีโอต้อนรับ)</p>'}<h2>วัตถุประสงค์ของหลักสูตร</h2><p style="white-space:pre-line">${esc(s.objectives)}</p><button onclick="H=[[dash,[]]];show(lesson,1)">เริ่มเรียนบทที่ 1 ▶</button></div>`)}
 
 /* ---------- หน้าบทเรียน ---------- */
 function dash(){const last=U.lastLesson||1;
@@ -96,7 +100,7 @@ async function lesson(n,tab){const L=D.lessons.find(l=>l.no==n);U.lastLesson=n;a
  const av=Object.keys(MN).filter(k=>L[k]);tab=tab||av[0];
  const done=(D.progress.find(p=>p.lesson==n)||{items:''}).items.split(',');
  let body='<p>บทนี้ยังไม่มีสื่อการเรียน</p>';
- if(tab){const u=L[tab];body=(tab=='audio'&&/\.(mp3|m4a|wav|ogg)(\?|$)/i.test(u)?`<audio controls src="${esc(u)}"></audio>`:`<iframe src="${esc(embed(u))}" allowfullscreen></iframe>`)+
+ if(tab){const u=L[tab];body=player(u)+
   `<div class="np"><a class="btn alt" target="_blank" href="${esc(tab=='doc'?embed(u):dl(u))}">🖨️ เปิดเพื่อพิมพ์/ดู</a><a class="btn alt" target="_blank" href="${esc(dl(u))}">💾 บันทึกลงเครื่อง</a></div>`;
   api('progress',{code:U.code,lesson:n,item:tab}).then(r=>{if(r.ok){setP(n,r);const b=$('#pp');if(b)b.innerHTML=`ความคืบหน้า ${r.percent}%`}})}
  draw(`<div class="card"><h2>บทที่ ${n}: ${esc(L.title)}</h2><div class="tabs">${av.map(k=>`<button class="${k==tab?'on':''}" onclick="lesson(${n},'${k}')">${MN[k]}${done.includes(k)?' ✓':''}</button>`).join('')}</div><p class="tag" id="pp">ความคืบหน้า ${pct(n)}%</p>${body}
