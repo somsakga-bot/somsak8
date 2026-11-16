@@ -87,7 +87,7 @@ function result(type,r){const pre=D.scores.filter(s=>s.type=='pre').pop();
  ${type=='post'?`<div class="scroll"><table><tr>${r.per.map((_,i)=>`<th>บท ${i+1}</th>`).join('')}</tr><tr>${r.per.map(v=>`<td>${v}/5</td>`).join('')}</tr></table></div>`:''}${msg}<button class="alt" onclick="H=[];show(dash)">กลับหน้าบทเรียน</button></div>`)}
 
 /* ---------- วิดีโอต้อนรับ + วัตถุประสงค์ ---------- */
-function intro(){const s=D.settings;draw(`<div class="card"><h2>วิดีโอต้อนรับ</h2>${s.welcomeVideo?player(s.welcomeVideo):'<p>(ยังไม่ได้ใส่วิดีโอต้อนรับ)</p>'}<h2>วัตถุประสงค์ของหลักสูตร</h2><p style="white-space:pre-line">${esc(s.objectives)}</p><button onclick="H=[[dash,[]]];show(lesson,1)">เริ่มเรียนบทที่ 1 ▶</button></div>`)}
+function intro(){const s=D.settings;draw(`<div class="card"><h2>วิดีโอต้อนรับ</h2>${s.welcomeVideo?player(s.welcomeVideo):'<p>ศูนย์เตรียมสอบ_นสต.mp4</p>'}<h2>วัตถุประสงค์ของหลักสูตร</h2><p style="white-space:pre-line">${esc(s.objectives)}</p><button onclick="H=[[dash,[]]];show(lesson,1)">เริ่มเรียนบทที่ 1 ▶</button></div>`)}
 
 /* ---------- หน้าบทเรียน ---------- */
 function dash(){const last=U.lastLesson||1;
