@@ -56,7 +56,7 @@ async function refresh(){const r=await api('login',{code:U.code});if(r.ok){D=r;O
 function home(){draw(`<div class="card" style="text-align:center"><h2>ยินดีต้อนรับสู่ ศูนย์เตรียมสอบ นสต.ป่าสัก</h2><p>ระบบเรียนออนไลน์ 10 บทเรียน พร้อมแบบทดสอบและใบประกาศ</p><button onclick="show(reg)">📝 สมัครเข้าเรียน</button></div>
 <div class="card"><h2>เข้าสู่ห้องเรียน</h2>กรอกรหัสที่ได้รับ<input id="code" inputmode="numeric" placeholder="รหัสเข้าเรียน" onkeydown="if(event.key=='Enter')login()"><button onclick="login()">เข้าสู่ห้องเรียน</button></div>
 <div style="text-align:right"><button class="alt" onclick="show(admin)">🔐 แอดมิน</button></div>`)}
-function reg(){draw(`<div class="card"><h2>สมัครเข้าเรียน</h2><div class="grid"><div>ชื่อ *<input id="f1"></div><div>นามสกุล *<input id="f2"></div><div>เบอร์โทร *<input id="f3"></div><div>อีเมล (ถ้ามี จะส่งรหัสให้ทางอีเมล)<input id="f4"></div></div>หน่วย/สังกัด<input id="f5"><button onclick="doReg()">ส่งใบสมัคร</button><div id="msg"></div></div>`)}
+function reg(){draw(`<div class="card"><h2>สมัครเข้าเรียน</h2><div class="grid"><div>ชื่อ *<input id="f1"></div><div>นามสกุล *<input id="f2"></div><div>เบอร์โทร *<input id="f3"></div><div>อีเมล (ถ้ามี จะส่งรหัสให้ทางอีเมล)<input id="f4"></div></div>ที่อยู่<input id="f5"><button onclick="doReg()">ส่งใบสมัคร</button><div id="msg"></div></div>`)}
 async function doReg(){const r=await api('register',{firstName:f1.value.trim(),lastName:f2.value.trim(),phone:f3.value.trim(),email:f4.value.trim(),unit:f5.value.trim()});
  $('#msg').innerHTML=r.ok?'<p class="tag">✅ ส่งใบสมัครแล้ว รอการอนุมัติ เมื่ออนุมัติจะมีรหัสส่งให้ท่าน</p>':'<p class="tag bad">'+esc(r.msg)+'</p>'}
 async function login(){const code=$('#code').value.trim();if(!code)return;const r=await api('login',{code});
