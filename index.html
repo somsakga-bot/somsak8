@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ศูนย์เตรียมสอบ นสต.ป่าสัก</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--g1:#0a3b2b;--g2:#14664a;--g3:#e6f2ec;--gold:#d4af37;--bg:#f2f6f3;--tx:#17231d}
+*{box-sizing:border-box}body{margin:0;font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx)}
+header{background:linear-gradient(90deg,var(--g1),var(--g2));color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:12px}.brand img{height:46px}.brand b{font-size:1.15rem;display:block}.brand small{opacity:.85}
+main{max-width:980px;margin:0 auto;padding:16px}
+.card{background:#fff;border-radius:14px;padding:20px;margin:0 0 14px;box-shadow:0 2px 8px #0001;border-top:4px solid var(--g2)}
+h2{color:var(--g1);margin-top:0}
+button,.btn{background:var(--g2);color:#fff;border:0;border-radius:9px;padding:10px 18px;font:inherit;cursor:pointer;text-decoration:none;display:inline-block;margin:3px}
+button:hover,.btn:hover{background:var(--g1)}button.alt{background:#fff;color:var(--g1);border:1.5px solid var(--g2)}button.gold{background:var(--gold);color:#222}button:disabled{opacity:.45;cursor:not-allowed}
+input,textarea{width:100%;padding:10px;border:1.5px solid #b9cfc4;border-radius:9px;font:inherit;margin:4px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.bar{background:#dbe8e1;border-radius:99px;height:10px;overflow:hidden}.bar i{display:block;height:100%;background:var(--g2)}
+.tag{padding:2px 10px;border-radius:99px;font-size:.85rem;background:var(--g3);color:var(--g1)}.bad{background:#fde3e3;color:#a11}
+.q{border-bottom:1px solid #e3ece7;padding:10px 0}.q label{display:block;padding:5px 8px;border-radius:7px;cursor:pointer}.q label:hover{background:var(--g3)}.q input{width:auto;margin:0 8px 0 0}
+iframe{width:100%;height:480px;border:1px solid #cdddd4;border-radius:10px}audio{width:100%}
+table{width:100%;border-collapse:collapse;font-size:.92rem}td,th{border:1px solid #cfe0d7;padding:6px 8px;text-align:left}th{background:var(--g3)}
+.tabs button{background:var(--g3);color:var(--g1)}.tabs button.on{background:var(--g2);color:#fff}
+.cert{border:10px double var(--g1);padding:40px;text-align:center;background:#fff;min-height:520px}.cert h1{color:var(--g1);font-size:2.2rem}.cert .nm{font-size:2rem;font-weight:700;border-bottom:2px solid var(--gold);display:inline-block;padding:0 30px;margin:14px 0}
+.scroll{overflow-x:auto}
+@media print{.np,header{display:none!important}body{background:#fff}.card{box-shadow:none;border:0}@page{size:A4 landscape;margin:10mm}}
+</style></head><body>
+<header><div class="brand"><img id="logo" src="logo.png" alt="" onerror="this.style.display='none'"><div><b>ศูนย์เตรียมสอบ นสต.ป่าสัก</b><small id="inst">ระบบเรียนออนไลน์ · (ชื่อสถาบัน)</small></div></div><button id="bk" class="alt np" onclick="back()">← ย้อนกลับ</button></header>
+<main id="app"></main>
+<script>
+/* ===== ตั้งค่า ===== */
+const API='วาง_WEB_APP_URL_ที่นี่';      // URL เว็บแอปจาก Apps Script
+const MIN_PCT=80;
+/* ================== */
+const $=s=>document.querySelector(s), app=$('#app');
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MN={doc:'📄 เอกสาร',slides:'🖥️ สไลด์',infographic:'🖼️ อินโฟกราฟิก',video:'🎬 วิดีโอ',audio:'🎧 คลิปเสียง'};
+let U=null,D=null,H=[],PW='';
+async function api(action,p={}){try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action,...p})});return await r.json()}catch(e){return{ok:false,msg:'เชื่อมต่อระบบไม่ได้'}}}
+function show(fn,...a){H.push([fn,a]);fn(...a);scrollTo(0,0)}
+function replace(fn,...a){H.pop();show(fn,...a)}
+function back(){H.pop();const h=H[H.length-1];if(h){h[0](...h[1])}else show(home)}
+function draw(h){app.innerHTML=h;$('#bk').style.display=H.length>1?'':'none'}
+function embed(u){u=String(u);let m;
+ if(m=u.match(/docs\.google\.com\/(document|presentation|spreadsheets)\/d\/([\w-]+)/))return`https://docs.google.com/${m[1]}/d/${m[2]}/`+(m[1]=='presentation'?'embed':'preview');
+ if(m=u.match(/(?:\/d\/|[?&]id=)([\w-]{20,})/))return`https://drive.google.com/file/d/${m[1]}/preview`;
+ if(m=u.match(/(?:youtu\.be\/|v=)([\w-]{11})/))return'https://www.youtube.com/embed/'+m[1];return u}
+function dl(u){u=String(u);let m;
+ if(m=u.match(/docs\.google\.com\/(document|presentation|spreadsheets)\/d\/([\w-]+)/))return`https://docs.google.com/${m[1]}/d/${m[2]}/export?format=`+(m[1]=='presentation'?'pptx':m[1]=='document'?'pdf':'xlsx');
+ if(m=u.match(/(?:\/d\/|[?&]id=)([\w-]{20,})/))return`https://drive.google.com/uc?export=download&id=${m[1]}`;return u}
+const pct=n=>(D.progress.find(p=>p.lesson==n)||{percent:0}).percent;
+const allDone=()=>D.lessons.every(l=>pct(l.no)>=MIN_PCT);
+const name=()=>U.firstName+' '+U.lastName;
+async function refresh(){const r=await api('login',{code:U.code});if(r.ok){D=r;Object.assign(U,r.user)}}
+
+/* ---------- หน้าหลัก ---------- */
+function home(){draw(`<div class="card" style="text-align:center"><h2>ยินดีต้อนรับสู่ ศูนย์เตรียมสอบ นสต.ป่าสัก</h2><p>ระบบเรียนออนไลน์ 10 บทเรียน พร้อมแบบทดสอบและใบประกาศ</p><button onclick="show(reg)">📝 สมัครเข้าเรียน</button></div>
+<div class="card"><h2>เข้าสู่ห้องเรียน</h2>กรอกรหัสที่ได้รับ<input id="code" inputmode="numeric" placeholder="รหัสเข้าเรียน" onkeydown="if(event.key=='Enter')login()"><button onclick="login()">เข้าสู่ห้องเรียน</button></div>
+<div style="text-align:right"><button class="alt" onclick="show(admin)">🔐 แอดมิน</button></div>`)}
+function reg(){draw(`<div class="card"><h2>สมัครเข้าเรียน</h2><div class="grid"><div>ชื่อ *<input id="f1"></div><div>นามสกุล *<input id="f2"></div><div>เบอร์โทร *<input id="f3"></div><div>อีเมล (ถ้ามี จะส่งรหัสให้ทางอีเมล)<input id="f4"></div></div>หน่วย/สังกัด<input id="f5"><button onclick="doReg()">ส่งใบสมัคร</button><div id="msg"></div></div>`)}
+async function doReg(){const r=await api('register',{firstName:f1.value.trim(),lastName:f2.value.trim(),phone:f3.value.trim(),email:f4.value.trim(),unit:f5.value.trim()});
+ $('#msg').innerHTML=r.ok?'<p class="tag">✅ ส่งใบสมัครแล้ว รอการอนุมัติ เมื่ออนุมัติจะมีรหัสส่งให้ท่าน</p>':'<p class="tag bad">'+esc(r.msg)+'</p>'}
+async function login(){const code=$('#code').value.trim();if(!code)return;const r=await api('login',{code});
+ if(!r.ok)return alert(r.msg);D=r;U={code,...r.user};H=[];show(U.preDone?dash:welcome)}
+
+/* ---------- ต้อนรับ + ก่อนเรียน ---------- */
+function welcome(){draw(`<div class="card" style="text-align:center"><h2>🎉 ยินดีต้อนรับ</h2><h1 style="color:var(--g2)">${esc(name())}</h1><p>ก่อนเข้าสู่บทเรียน กรุณาทำแบบทดสอบก่อนเรียน (30 ข้อ)</p><button onclick="show(test,'pre')">เริ่มทำแบบทดสอบก่อนเรียน</button></div>`)}
+async function test(type){draw('<div class="card">กำลังโหลดข้อสอบ...</div>');const r=await api('getTest',{code:U.code,type});
+ if(!r.ok){alert(r.msg);return back()}
+ window.QS=r.questions;
+ draw(`<div class="card"><h2>${type=='pre'?'แบบทดสอบก่อนเรียน':'แบบทดสอบหลังเรียน'} (${QS.length} ข้อ)</h2>${QS.map((q,i)=>`<div class="q"><b>${i+1}. ${esc(q.q)}</b>${q.c.map((c,j)=>`<label><input type="radio" name="q${q.id}" value="${j+1}">${'กขคง'[j]}. ${esc(c)}</label>`).join('')}</div>`).join('')}
+ <button id="sb" onclick="submitT('${type}')">ส่งแบบทดสอบ</button></div>`)}
+async function submitT(type){const answers={};QS.forEach(q=>{const c=document.querySelector(`input[name=q${q.id}]:checked`);if(c)answers[q.id]=c.value});
+ if(Object.keys(answers).length<QS.length&&!confirm('ยังตอบไม่ครบ ต้องการส่งเลยหรือไม่?'))return;
+ $('#sb').disabled=true;const r=await api('submitTest',{code:U.code,type,answers});if(!r.ok){alert(r.msg);return}
+ await refresh();replace(result,type,r)}
+function result(type,r){const pre=D.scores.filter(s=>s.type=='pre').pop();
+ let msg='';if(type=='pre')msg=`<p>คะแนนก่อนเรียนของท่าน: <b>${r.total}</b> คะแนน</p><button onclick="replace(intro)">เข้าสู่บทเรียน ▶</button>`;
+ else if(r.passed)msg=`<p class="tag">🎓 ท่านสอบผ่าน! ได้ ${r.total}/50 คะแนน</p><button class="gold" onclick="show(cert)">🖨️ พิมพ์ใบประกาศ</button>`;
+ else if(r.failCount==1)msg=`<p class="tag bad">ท่านได้ ${r.total}/50 ต่ำกว่า 30 คะแนน ไม่ผ่าน — ท่านต้องสอบซ่อม</p><button onclick="replace(test,'post')">สอบซ่อมครั้งที่ 1</button>`;
+ else if(r.failCount==2)msg=`<p class="tag bad">ท่านได้ ${r.total}/50 ยังไม่ผ่าน — ต้องสอบซ่อมอีกรอบเป็นครั้งที่ 2</p><button onclick="replace(test,'post')">สอบซ่อมครั้งที่ 2</button>`;
+ else msg=`<p class="tag bad">ท่านทดสอบไม่ผ่าน ขอให้ท่านลงทะเบียนเรียนใหม่อีกครั้ง</p><button onclick="H=[];show(reg)">ลงทะเบียนเรียนใหม่</button>`;
+ draw(`<div class="card"><h2>ผลคะแนน${type=='pre'?'ก่อนเรียน':'หลังเรียน'}</h2><h1 style="color:var(--g2)">${r.total} คะแนน</h1>${type=='post'&&pre?`<p>เทียบกับก่อนเรียน: ${pre.total} → ${r.total} (${r.total-pre.total>=0?'+':''}${r.total-pre.total})</p>`:''}
+ ${type=='post'?`<div class="scroll"><table><tr>${r.per.map((_,i)=>`<th>บท ${i+1}</th>`).join('')}</tr><tr>${r.per.map(v=>`<td>${v}/5</td>`).join('')}</tr></table></div>`:''}${msg}<button class="alt" onclick="H=[];show(dash)">กลับหน้าบทเรียน</button></div>`)}
+
+/* ---------- วิดีโอต้อนรับ + วัตถุประสงค์ ---------- */
+function intro(){const s=D.settings;draw(`<div class="card"><h2>วิดีโอต้อนรับ</h2>${s.welcomeVideo?`<iframe src="${esc(embed(s.welcomeVideo))}" allowfullscreen></iframe>`:'<p>(ยังไม่ได้ใส่วิดีโอต้อนรับ)</p>'}<h2>วัตถุประสงค์ของหลักสูตร</h2><p style="white-space:pre-line">${esc(s.objectives)}</p><button onclick="H=[[dash,[]]];show(lesson,1)">เริ่มเรียนบทที่ 1 ▶</button></div>`)}
+
+/* ---------- หน้าบทเรียน ---------- */
+function dash(){const last=U.lastLesson||1;
+ draw(`<div class="card"><h2>สวัสดี ${esc(name())}</h2><p>เรียนให้ครบทุกบท (บทละไม่น้อยกว่า ${MIN_PCT}%) จึงจะทดสอบหลังเรียนได้</p><button onclick="show(lesson,${last})">▶ เรียนต่อ บทที่ ${last}</button><button class="alt" onclick="show(intro)">วิดีโอต้อนรับ/วัตถุประสงค์</button></div>
+ <div class="grid">${D.lessons.map(l=>{const p=pct(l.no);return`<div class="card"><b>บทที่ ${l.no}: ${esc(l.title)}</b><div class="bar" style="margin:8px 0"><i style="width:${p}%"></i></div><span class="tag ${p<MIN_PCT?'bad':''}">${p}% ${p>=MIN_PCT?'ผ่านบทนี้':'ยังไม่ผ่าน'}</span><br><button onclick="show(lesson,${l.no})">เข้าเรียน</button></div>`}).join('')}</div>
+ <div class="card"><h2>การทดสอบหลังเรียน</h2><p>${U.passed?'✅ ท่านสอบผ่านแล้ว':allDone()?'พร้อมทดสอบหลังเรียน (50 ข้อ ผ่านเมื่อได้ตั้งแต่ 30 คะแนน)':'🔒 ยังเรียนไม่ครบทุกบท'}</p>
+ <button ${allDone()&&!U.passed&&U.failCount<3?'':'disabled'} onclick="show(test,'post')">ทำแบบทดสอบหลังการเรียน</button>
+ <button class="gold" ${U.passed?'':'disabled'} onclick="show(cert)">🖨️ พิมพ์ใบประกาศ</button><button class="alt" onclick="show(report)">🧾 พิมพ์รายงานคะแนน</button></div>`)}
+async function lesson(n,tab){const L=D.lessons.find(l=>l.no==n);U.lastLesson=n;api('progress',{code:U.code,lesson:n}).then(r=>{if(r.ok)setP(n,r)});
+ const av=Object.keys(MN).filter(k=>L[k]);tab=tab||av[0];
+ const done=(D.progress.find(p=>p.lesson==n)||{items:''}).items.split(',');
+ let body='<p>บทนี้ยังไม่มีสื่อการเรียน</p>';
+ if(tab){const u=L[tab];body=(tab=='audio'&&/\.(mp3|m4a|wav|ogg)(\?|$)/i.test(u)?`<audio controls src="${esc(u)}"></audio>`:`<iframe src="${esc(embed(u))}" allowfullscreen></iframe>`)+
+  `<div class="np"><a class="btn alt" target="_blank" href="${esc(tab=='doc'?embed(u):dl(u))}">🖨️ เปิดเพื่อพิมพ์/ดู</a><a class="btn alt" target="_blank" href="${esc(dl(u))}">💾 บันทึกลงเครื่อง</a></div>`;
+  api('progress',{code:U.code,lesson:n,item:tab}).then(r=>{if(r.ok){setP(n,r);const b=$('#pp');if(b)b.innerHTML=`ความคืบหน้า ${r.percent}%`}})}
+ draw(`<div class="card"><h2>บทที่ ${n}: ${esc(L.title)}</h2><div class="tabs">${av.map(k=>`<button class="${k==tab?'on':''}" onclick="lesson(${n},'${k}')">${MN[k]}${done.includes(k)?' ✓':''}</button>`).join('')}</div><p class="tag" id="pp">ความคืบหน้า ${pct(n)}%</p>${body}
+ <div class="np"><button class="alt" ${n>1?'':'disabled'} onclick="replace(lesson,${n-1})">◀ บทก่อนหน้า</button><button class="alt" onclick="H=[[dash,[]]];show(dash)">สารบัญบทเรียน</button><button ${n<10?'':'disabled'} onclick="replace(lesson,${n+1})">บทถัดไป ▶</button>
+ <button class="alt" onclick="dlAll(${n})">💾 บันทึกสื่อทั้งบท</button></div></div>`)}
+function setP(n,r){const p=D.progress.find(x=>x.lesson==n);if(p){p.percent=r.percent;p.items=r.items}else D.progress.push({lesson:n,percent:r.percent,items:r.items})}
+function dlAll(n){const L=D.lessons.find(l=>l.no==n);Object.keys(MN).filter(k=>L[k]).forEach((k,i)=>setTimeout(()=>window.open(dl(L[k]),'_blank'),i*700))}
+
+/* ---------- ใบประกาศ / รายงาน ---------- */
+function cert(){const d=new Date().toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'});
+ draw(`<div class="np" style="margin-bottom:10px"><button onclick="print()">🖨️ พิมพ์ใบประกาศ</button></div><div class="cert"><img src="logo.png" style="height:90px" onerror="this.style.display='none'"><h1>ใบประกาศนียบัตร</h1><p>ศูนย์เตรียมสอบ นสต.ป่าสัก ขอมอบให้ไว้เพื่อแสดงว่า</p><div class="nm">${esc(name())}</div><p>ได้ผ่านการเรียนและผ่านการทดสอบหลักสูตรเตรียมสอบ นสต. ครบถ้วนตามเกณฑ์</p><p>ให้ไว้ ณ วันที่ ${d}</p></div>`)}
+function report(){const S=D.scores,pre=S.filter(s=>s.type=='pre').pop(),post=S.filter(s=>s.type=='post');
+ draw(`<div class="np"><button onclick="print()">🖨️ พิมพ์รายงาน</button></div><div class="card"><h2>รายงานผลคะแนน</h2><p><b>${esc(name())}</b> · ก่อนเรียน: ${pre?pre.total+'/30':'-'}</p>
+ <div class="scroll"><table><tr><th>ครั้งที่</th>${[...Array(10)].map((_,i)=>`<th>บท ${i+1}</th>`).join('')}<th>รวม</th><th>ผล</th></tr>
+ ${post.map(s=>`<tr><td>${s.attempt}</td>${[...Array(10)].map((_,i)=>`<td>${s['l'+(i+1)]}</td>`).join('')}<td><b>${s.total}/50</b></td><td>${s.passed===true||s.passed=='TRUE'?'ผ่าน':'ไม่ผ่าน'}</td></tr>`).join('')||'<tr><td colspan=13>ยังไม่มีผลทดสอบหลังเรียน</td></tr>'}</table></div></div>`)}
+
+/* ---------- แอดมิน ---------- */
+async function admin(){if(!PW){PW=prompt('กรอกรหัสผ่านแอดมิน')||'';if(!PW)return back()}adm('list')}
+async function adm(op,row){const r=await api('admin',{pw:PW,op,row});if(!r.ok){PW='';alert(r.msg);return back()}
+ const A=r.applicants,st={pending:'รออนุมัติ',approved:'อนุมัติแล้ว',rejected:'ไม่อนุมัติ',expired:'หมดสิทธิ์'};
+ draw(`<div class="card"><h2>🔐 แอดมิน</h2><a class="btn" target="_blank" href="${esc(r.sheetUrl)}">เปิด Google Sheet เพื่อแก้ไขบทเรียน/ข้อสอบ/ข้อมูลทั้งหมด</a><button class="alt" onclick="adm('list')">รีเฟรช</button>
+ <h3>ผู้สมัคร (${A.length})</h3><div class="scroll"><table><tr><th>ชื่อ</th><th>โทร</th><th>สถานะ</th><th>รหัส</th><th>ผ่าน</th><th>จัดการ</th></tr>${A.map(a=>`<tr><td>${esc(a.firstName+' '+a.lastName)}</td><td>${esc(a.phone)}</td><td>${st[a.status]||a.status}</td><td>${esc(a.code)}</td><td>${a.passed===true||a.passed=='TRUE'?'✅':''}</td><td>${a.status=='pending'?`<button onclick="adm('approve',${a._row})">อนุมัติ</button><button class="alt" onclick="adm('reject',${a._row})">ไม่อนุมัติ</button>`:a.status=='expired'?`<button onclick="adm('reset',${a._row})">เปิดสิทธิ์สอบใหม่</button>`:''}</td></tr>`).join('')}</table></div>
+ <h3>คะแนนล่าสุด</h3><div class="scroll"><table><tr><th>เวลา</th><th>ชื่อ</th><th>ประเภท</th><th>ครั้งที่</th><th>รวม</th></tr>${r.scores.slice(-50).reverse().map(s=>`<tr><td>${esc(s.ts.slice(0,24))}</td><td>${esc(s.name)}</td><td>${s.type=='pre'?'ก่อน':'หลัง'}</td><td>${s.attempt}</td><td>${s.total}</td></tr>`).join('')}</table></div></div>`)}
+show(home);
+</script></body></html>
