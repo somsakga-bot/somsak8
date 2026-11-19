@@ -75,7 +75,7 @@ async function test(type){draw('<div class="card">กำลังโหลดข
  <button id="sb" onclick="submitT('${type}')">ส่งแบบทดสอบ</button></div>`)}
 async function submitT(type){const answers={};QS.forEach(q=>{const c=document.querySelector(`input[name=q${q.id}]:checked`);if(c)answers[q.id]=c.value});
  if(Object.keys(answers).length<QS.length&&!confirm('ยังตอบไม่ครบ ต้องการส่งเลยหรือไม่?'))return;
- function testCard(type){test(type);return '<div class="card">กำลังโหลดข้อสอบ...</div>'}
+ 
 function postPage(){draw(testCard('post'))}                            
  $('#sb').disabled=true;const r=await api('submitTest',{code:U.code,type,answers});if(!r.ok){alert(r.msg);return}
  await refresh();replace(result,type,r)}
