@@ -96,7 +96,7 @@ function dash(){const last=U.lastLesson||1;
  draw(`<div class="card"><h2>สวัสดี ${esc(name())}</h2><p>เรียนให้ครบทุกบท (บทละไม่น้อยกว่า ${MIN_PCT}%) จึงจะทดสอบหลังเรียนได้</p><button onclick="show(lesson,${last})">▶ เรียนต่อ บทที่ ${last}</button><button class="alt" onclick="show(intro)">วิดีโอต้อนรับ/วัตถุประสงค์</button></div>
  <div class="grid">${D.lessons.map(l=>{const p=pct(l.no);return`<div class="card"><b>บทที่ ${l.no}: ${esc(l.title)}</b><div class="bar" style="margin:8px 0"><i style="width:${p}%"></i></div><span class="tag ${p<MIN_PCT?'bad':''}">${p}% ${p>=MIN_PCT?'ผ่านบทนี้':'ยังไม่ผ่าน'}</span><br><button onclick="show(lesson,${l.no})">เข้าเรียน</button></div>`}).join('')}</div>
  <div class="card"><h2>การทดสอบหลังเรียน</h2><p>${U.passed?'✅ ท่านสอบผ่านแล้ว':allDone()?'พร้อมทดสอบหลังเรียน (50 ข้อ ผ่านเมื่อได้ตั้งแต่ 30 คะแนน)':'🔒 ยังเรียนไม่ครบทุกบท'}</p>
- <button ${allDone()&&!U.passed&&U.failCount<3?'':'disabled'} onclick="show(postPege)">ทำแบบทดสอบหลังการเรียน</button>
+ <button ${allDone()&&!U.passed&&U.failCount<3?'':'disabled'} onclick="show(test, 'post')">ทำแบบทดสอบหลังการเรียน</button>
  <button class="gold" ${U.passed?'':'disabled'} onclick="show(cert)">🖨️ พิมพ์ใบประกาศ</button><button class="alt" onclick="show(report)">🧾 พิมพ์รายงานคะแนน</button></div>`)}
 async function lesson(n,tab){const L=D.lessons.find(l=>l.no==n);U.lastLesson=n;api('progress',{code:U.code,lesson:n}).then(r=>{if(r.ok)setP(n,r)});
  const av=Object.keys(MN).filter(k=>L[k]);tab=tab||av[0];
