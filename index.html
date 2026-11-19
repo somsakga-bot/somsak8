@@ -85,7 +85,10 @@ function result(type,r){const pre=D.scores.filter(s=>s.type=='pre').pop();
  else msg=`<p class="tag bad">ท่านทดสอบไม่ผ่าน ขอให้ท่านลงทะเบียนเรียนใหม่อีกครั้ง</p><button onclick="H=[];show(reg)">ลงทะเบียนเรียนใหม่</button>`;
  draw(`<div class="card"><h2>ผลคะแนน${type=='pre'?'ก่อนเรียน':'หลังเรียน'}</h2><h1 style="color:var(--g2)">${r.total} คะแนน</h1>${type=='post'&&pre?`<p>เทียบกับก่อนเรียน: ${pre.total} → ${r.total} (${r.total-pre.total>=0?'+':''}${r.total-pre.total})</p>`:''}
  ${type=='post'?`<div class="scroll"><table><tr>${r.per.map((_,i)=>`<th>บท ${i+1}</th>`).join('')}</tr><tr>${r.per.map(v=>`<td>${v}/5</td>`).join('')}</tr></table></div>`:''}${msg}<button class="alt" onclick="H=[];show(dash)">กลับหน้าบทเรียน</button></div>`)}
-
+JavaScript
+/* ---------- หน้าทดสอบหลังเรียน (เรียกผ่าน testCard) ---------- */
+function testCard(type){test(type);return '<div class="card">กำลังโหลดข้อสอบ...</div>'}
+function postPage(){draw(testCard('post'))}
 /* ---------- วิดีโอต้อนรับ + วัตถุประสงค์ ---------- */
 function intro(){const s=D.settings;draw(`<div class="card"><h2>วิดีโอต้อนรับ</h2>${s.welcomeVideo?player(s.welcomeVideo):'<p>ศูนย์เตรียมสอบ_นสต.mp4</p>'}<h2>วัตถุประสงค์ของหลักสูตร</h2><p style="white-space:pre-line">${esc(s.objectives)}</p><button onclick="H=[[dash,[]]];show(lesson,1)">เริ่มเรียนบทที่ 1 ▶</button></div>`)}
 
@@ -94,7 +97,7 @@ function dash(){const last=U.lastLesson||1;
  draw(`<div class="card"><h2>สวัสดี ${esc(name())}</h2><p>เรียนให้ครบทุกบท (บทละไม่น้อยกว่า ${MIN_PCT}%) จึงจะทดสอบหลังเรียนได้</p><button onclick="show(lesson,${last})">▶ เรียนต่อ บทที่ ${last}</button><button class="alt" onclick="show(intro)">วิดีโอต้อนรับ/วัตถุประสงค์</button></div>
  <div class="grid">${D.lessons.map(l=>{const p=pct(l.no);return`<div class="card"><b>บทที่ ${l.no}: ${esc(l.title)}</b><div class="bar" style="margin:8px 0"><i style="width:${p}%"></i></div><span class="tag ${p<MIN_PCT?'bad':''}">${p}% ${p>=MIN_PCT?'ผ่านบทนี้':'ยังไม่ผ่าน'}</span><br><button onclick="show(lesson,${l.no})">เข้าเรียน</button></div>`}).join('')}</div>
  <div class="card"><h2>การทดสอบหลังเรียน</h2><p>${U.passed?'✅ ท่านสอบผ่านแล้ว':allDone()?'พร้อมทดสอบหลังเรียน (50 ข้อ ผ่านเมื่อได้ตั้งแต่ 30 คะแนน)':'🔒 ยังเรียนไม่ครบทุกบท'}</p>
- <button ${allDone()&&!U.passed&&U.failCount<3?'':'disabled'} onclick="show(test,'https://drive.google.com/file/d/1pXmYCpyqpu5_sAFu8hFEe0jyCuEu6JVI/view?usp=drive_link')">ทำแบบทดสอบหลังการเรียน</button>
+ <button ${allDone()&&!U.passed&&U.failCount<3?'':'disabled'} onclick="postPege()ทำแบบทดสอบหลังการเรียน</button>
  <button class="gold" ${U.passed?'':'disabled'} onclick="show(cert)">🖨️ พิมพ์ใบประกาศ</button><button class="alt" onclick="show(report)">🧾 พิมพ์รายงานคะแนน</button></div>`)}
 async function lesson(n,tab){const L=D.lessons.find(l=>l.no==n);U.lastLesson=n;api('progress',{code:U.code,lesson:n}).then(r=>{if(r.ok)setP(n,r)});
  const av=Object.keys(MN).filter(k=>L[k]);tab=tab||av[0];
